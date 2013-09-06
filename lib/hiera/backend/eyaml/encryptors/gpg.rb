@@ -16,7 +16,7 @@ class Hiera
           self.options = {
             :gnupghome => { :desc => "Location of your GNUPGHOME directory",
                             :type => :string,
-                            :default => "#{ENV[real_home]}/.gnupg" },
+                            :default => "#{ENV[["HOME", "HOMEPATH"].detect { |h| ENV[h] != nil }]}/.gnupg" },
             :always_trust => { :desc => "Assume that used keys are fully trusted",
                                :type => :boolean,
                                :default => false },
@@ -24,11 +24,11 @@ class Hiera
                              :type => :string }
           }
 
-          def eyaml?
-            Eyaml::Options[:source] == :eyaml
+          def self.eyaml?
+            !Eyaml::Options[:source].nil?
           end
 
-          def debug (msg)
+          def self.debug (msg)
             if eyaml?
               STDERR.puts msg
             else
@@ -36,7 +36,7 @@ class Hiera
             end
           end
 
-          def warn (msg)
+          def self.warn (msg)
             if eyaml?
               STDERR.puts msg
             else
@@ -44,7 +44,7 @@ class Hiera
             end
           end
 
-          def passfunc(hook, uid_hint, passphrase_info, prev_was_bad, fd)
+          def self.passfunc(hook, uid_hint, passphrase_info, prev_was_bad, fd)
             begin
                 system('stty -echo')
                 passphrase = ask("Enter passphrase for #{uid_hint}: ") { |q| q.echo = '*' }
@@ -58,13 +58,22 @@ class Hiera
               $stderr.puts
           end
 
-          def self.encrypt_string plaintext
+          def self.encrypt plaintext
             ENV["GNUPGHOME"] = self.option :gnupghome
             debug("GNUPGHOME is #{ENV['GNUPGHOME']}")
 
-            GPGME::Ctx.new
+            ctx = GPGME::Ctx.new
 
-            recipients = self.option(:recipients).split(",")
+            recipient_option = self.option :recipients
+            raise ArgumentError, 'No recipients provided, don\'t know who to encrypt to' if recipient_option.nil?
+
+            recipients = recipient_option.split(",")
+            debug("Recipents are #{recipients}")
+
+            keys = recipients.map {|r| 
+              ctx.keys(r)
+            }
+            debug("Keys: #{keys}")
 
             data = GPGME::Data.from_str(plaintext)
 
@@ -75,7 +84,7 @@ class Hiera
             ciphertext.read
           end
 
-          def self.decrypt_string ciphertext
+          def self.decrypt ciphertext
             ENV["GNUPGHOME"] = self.option :gnupghome
             debug("GNUPGHOME is #{ENV['GNUPGHOME']}")
 
