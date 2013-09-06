@@ -4,7 +4,7 @@ require 'hiera/backend/eyaml/encryptor'
 require 'hiera/backend/eyaml/utils'
 require 'hiera/backend/eyaml/options'
 
-module Hiera
+class Hiera
   module Backend
     module Eyaml
       module Encryptors
@@ -58,7 +58,7 @@ module Hiera
               $stderr.puts
           end
 
-          def encrypt_string plaintext
+          def self.encrypt_string plaintext
             ENV["GNUPGHOME"] = self.option :gnupghome
             debug("GNUPGHOME is #{ENV['GNUPGHOME']}")
 
@@ -75,7 +75,7 @@ module Hiera
             ciphertext.read
           end
 
-          def decrypt_string ciphertext
+          def self.decrypt_string ciphertext
             ENV["GNUPGHOME"] = self.option :gnupghome
             debug("GNUPGHOME is #{ENV['GNUPGHOME']}")
 
@@ -108,7 +108,7 @@ module Hiera
             end
           end
 
-          def create_keys
+          def self.create_keys
             STDERR.puts "The GPG encryptor does not support creation of keys, use the GPG command lines tools instead"
           end
 
