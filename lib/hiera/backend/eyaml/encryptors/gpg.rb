@@ -1,5 +1,6 @@
 require 'gpgme'
 require 'base64'
+require 'pathname'
 require 'hiera/backend/eyaml/encryptor'
 require 'hiera/backend/eyaml/utils'
 require 'hiera/backend/eyaml/options'
@@ -58,6 +59,31 @@ class Hiera
               $stderr.puts
           end
 
+          def self.find_recipients
+            # if we are editing a file, look for a recipients.hiera-eyaml-gpg file
+            filename = case Eyaml::Options[:source]
+            when :file
+              Eyaml::Options[:file]
+            when :eyaml
+              Eyaml::Options[:eyaml]
+            else
+              nil
+            end
+
+            if filename.nil? 
+              []
+            else
+              path = Pathname.new(filename).realpath.dirname
+              recipient_file = path.ascend.map { |path| 
+                path.join('recipients.hiera-eyaml-gpg') 
+              }.find { |file|
+                file.exist? 
+              }
+              recipient_file.readlines unless recipient_file.nil?
+              []
+            end
+          end
+
           def self.encrypt plaintext
             ENV["GNUPGHOME"] = self.option :gnupghome
             debug("GNUPGHOME is #{ENV['GNUPGHOME']}")
@@ -65,21 +91,33 @@ class Hiera
             ctx = GPGME::Ctx.new
 
             recipient_option = self.option :recipients
-            raise ArgumentError, 'No recipients provided, don\'t know who to encrypt to' if recipient_option.nil?
-
-            recipients = recipient_option.split(",")
+            recipients = unless recipient_option.nil?
+              recipient_option.split(",")
+            else
+              self.find_recipients
+            end
             debug("Recipents are #{recipients}")
 
-            keys = recipients.map {|r| 
-              ctx.keys(r)
-            }
+            raise ArgumentError, 'No recipients provided, don\'t know who to encrypt to' if recipients.empty?
+
+            keys = recipients.map {|r| ctx.keys(r).first }
             debug("Keys: #{keys}")
 
+            always_trust = self.option(:always_trust)
+            unless always_trust
+              # check validity of recipients (this is possibly naive, but better than the unhelpful
+              # error that it would spit out otherwise)
+              keys.each do |key|
+                unless key.primary_uid.validity >= GPGME::VALIDITY_FULL
+                  raise StandardError, "Key #{key.sha} (#{key.email}) not trusted (if key trust is established by another means then specify always-trust)"
+                end
+              end
+            end
+
             data = GPGME::Data.from_str(plaintext)
+            crypto = GPGME::Crypto.new(:always_trust => always_trust)
 
-            crypto = GPGME::Crypto.new(:always_trust => self.option(:always_trust))
-
-            ciphertext = crypto.encrypt(data, :recipients => recipients)
+            ciphertext = crypto.encrypt(data, :recipients => keys)
             ciphertext.seek 0
             ciphertext.read
           end
