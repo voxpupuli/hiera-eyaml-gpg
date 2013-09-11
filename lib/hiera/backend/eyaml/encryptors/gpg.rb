@@ -27,26 +27,6 @@ class Hiera
                              :type => :string }
           }
 
-          def self.hiera?
-            "hiera".eql? Eyaml::Options[:source]
-          end
-
-          def self.debug (msg)
-            if self.hiera?
-              Hiera.debug("[eyaml_gpg]:  #{msg}")
-            else
-              STDERR.puts msg
-            end
-          end
-
-          def self.warn (msg)
-            if self.hiera?
-              Hiera.warn("[eyaml_gpg]:  #{msg}")
-            else
-              STDERR.puts msg
-            end
-          end
-
           def self.passfunc(hook, uid_hint, passphrase_info, prev_was_bad, fd)
             begin
                 system('stty -echo')
