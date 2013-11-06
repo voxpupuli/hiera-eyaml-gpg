@@ -52,7 +52,7 @@ class Hiera
                 debug("Using --recipients-file option")
                 Pathname.new(recipient_file_option)
               else
-                debug("Searching for any hiera-eyaml-gpg.recipents files in path")
+                debug("Searching for any hiera-eyaml-gpg.recipients files in path")
                 # if we are editing a file, look for a hiera-eyaml-gpg.recipients file
                 filename = case Eyaml::Options[:source]
                 when :file
