@@ -64,8 +64,9 @@ that the private GPG key must not have a passphrase.
 
 Authors
 -------
-Simon Hildrew - Initial code
-Geoff Meakins - Created hiera-eyaml plugin framework that made this possible
+
+ - Simon Hildrew - Initial code
+ - Geoff Meakins - Created hiera-eyaml plugin framework that made this possible
 
 ### Contributors
-Walt Javins - Bug fixes
+ - Walt Javins - Bug fixes
