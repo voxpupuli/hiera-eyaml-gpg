@@ -61,3 +61,11 @@ Assuming you have a working `hiera` and `hiera-eyaml` then the only option you n
 configure `:gpg_gnupghome:` in your hiera.yaml (under the `:eyaml:` section). This should be the
 directory that contains the keyring etc for the user that can to decrypt the hiera data. Please note
 that the private GPG key must not have a passphrase.
+
+Authors
+-------
+Simon Hildrew - Initial code
+Geoff Meakins - Created hiera-eyaml plugin framework that made this possible
+
+### Contributors
+Walt Javins - Bug fixes
