@@ -27,10 +27,18 @@ class Hiera
                              :type => :string }
           }
 
+          @@passphrase_cache = Hash.new
+
           def self.passfunc(hook, uid_hint, passphrase_info, prev_was_bad, fd)
             begin
                 system('stty -echo')
-                passphrase = ask("Enter passphrase for #{uid_hint}: ") { |q| q.echo = '*' }
+
+                unless @@passphrase_cache.has_key?(uid_hint)
+                  @@passphrase_cache[uid_hint] = ask("Enter passphrase for #{uid_hint}: ") { |q| q.echo = '' }
+                  $stderr.puts
+                end
+                passphrase = @@passphrase_cache[uid_hint]
+
                 io = IO.for_fd(fd, 'w')
                 io.puts(passphrase)
                 io.flush
@@ -38,7 +46,6 @@ class Hiera
                 (0 ... $_.length).each do |i| $_[i] = ?0 end if $_
                   system('stty echo')
               end
-              $stderr.puts
           end
 
           def self.find_recipients
