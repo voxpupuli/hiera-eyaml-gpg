@@ -153,6 +153,7 @@ class Hiera
               txt.read
             else
               warn("No usable keys found in #{ENV['GNUPGHOME']}. Check :gpgpghome value in hiera.yaml is correct")
+              raise ArgumentError, "No usable keys found in #{ENV['GNUPGHOME']}. Check :gpgpghome value in hiera.yaml is correct"
             end
           end
 
