@@ -17,6 +17,6 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.add_dependency('hiera-eyaml', '>=1.3.4')
+  gem.add_dependency('hiera-eyaml', '>=1.3.8')
   gem.add_dependency('gpgme', '>=2.0.0')
 end
