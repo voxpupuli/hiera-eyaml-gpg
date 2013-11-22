@@ -101,9 +101,14 @@ class Hiera
             recipients = self.find_recipients
             debug("Recipents are #{recipients}")
 
-            raise ArgumentError, 'No recipients provided, don\'t know who to encrypt to' if recipients.empty?
+            raise RecoverableError, 'No recipients provided, don\'t know who to encrypt to' if recipients.empty?
 
-            keys = recipients.map {|r| ctx.keys(r).first }
+            keys = recipients.map {|r| 
+              key_to_use = ctx.keys(r).first 
+              if key_to_use.nil? 
+                raise RecoverableError, "No key found on keyring for #{r}"
+              end
+            }
             debug("Keys: #{keys}")
 
             always_trust = self.option(:always_trust)
@@ -112,7 +117,7 @@ class Hiera
               # error that it would spit out otherwise)
               keys.each do |key|
                 unless key.primary_uid.validity >= GPGME::VALIDITY_FULL
-                  raise StandardError, "Key #{key.sha} (#{key.email}) not trusted (if key trust is established by another means then specify always-trust)"
+                  raise RecoverableError, "Key #{key.sha} (#{key.email}) not trusted (if key trust is established by another means then specify always-trust)"
                 end
               end
             end
