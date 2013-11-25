@@ -108,6 +108,7 @@ class Hiera
               if key_to_use.nil? 
                 raise RecoverableError, "No key found on keyring for #{r}"
               end
+              key_to_use
             }
             debug("Keys: #{keys}")
 
