@@ -1,7 +1,7 @@
 hiera-eyaml-gpg
 ===============
 
-GPG encryprion backend for the [hiera-eyaml](https://github.com/TomPoulton/hiera-eyaml) module.
+GPG encryption backend for the [hiera-eyaml](https://github.com/TomPoulton/hiera-eyaml) module.
 
 Motivation
 ----------
