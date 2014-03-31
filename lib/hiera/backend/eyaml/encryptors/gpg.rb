@@ -15,9 +15,9 @@ class Hiera
           self.tag = "GPG"
 
           self.options = {
-            :gnupghome => { :desc => "Location of your GNUPGHOME directory",
-                            :type => :string,
-                            :default => "#{ENV[["HOME", "HOMEPATH"].detect { |h| ENV[h] != nil }]}/.gnupg" },
+            :gpg_gnupghome => { :desc => "Location of your GNUPGHOME directory",
+                                :type => :string,
+                                :default => "#{ENV[["HOME", "HOMEPATH"].detect { |h| ENV[h] != nil }]}/.gnupg" },
             :always_trust => { :desc => "Assume that used keys are fully trusted",
                                :type => :boolean,
                                :default => false },
@@ -93,7 +93,7 @@ class Hiera
           end
 
           def self.encrypt plaintext
-            ENV["GNUPGHOME"] = self.option :gnupghome
+            ENV["GNUPGHOME"] = self.option :gpg_gnupghome
             debug("GNUPGHOME is #{ENV['GNUPGHOME']}")
 
             ctx = GPGME::Ctx.new
@@ -132,7 +132,7 @@ class Hiera
           end
 
           def self.decrypt ciphertext
-            ENV["GNUPGHOME"] = self.option :gnupghome
+            ENV["GNUPGHOME"] = self.option :gpg_gnupghome
             debug("GNUPGHOME is #{ENV['GNUPGHOME']}")
 
             ctx = if hiera?
@@ -158,8 +158,8 @@ class Hiera
               txt.seek 0
               txt.read
             else
-              warn("No usable keys found in #{ENV['GNUPGHOME']}. Check :gpgpghome value in hiera.yaml is correct")
-              raise ArgumentError, "No usable keys found in #{ENV['GNUPGHOME']}. Check :gpgpghome value in hiera.yaml is correct"
+              warn("No usable keys found in #{ENV['GNUPGHOME']}. Check :gpg_gnupghome value in hiera.yaml is correct")
+              raise ArgumentError, "No usable keys found in #{ENV['GNUPGHOME']}. Check :gpg_gnupghome value in hiera.yaml is correct"
             end
           end
 
