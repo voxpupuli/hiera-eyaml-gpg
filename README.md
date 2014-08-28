@@ -38,7 +38,7 @@ How to use
 
 Once installed you can create encrypted hiera-eyaml blocks that are encrypted using GPG.
 
-    $ eyaml -n gpg -e -s "A secret string to encrypt" --gpg-recipients bob@example.com,hiera@example.com
+    $ eyaml encrypt -n gpg -s "A secret string to encrypt" --gpg-recipients bob@example.com,hiera@example.com
 
 If you do not have a web of trust (i.e. you normally use --always-trust for gpg signing) then you'll need 
 to use the `--gpg-always-trust` option on the command line.
@@ -46,7 +46,7 @@ to use the `--gpg-always-trust` option on the command line.
 It gets pretty dull to keep on remembering which recipients you should use, so you can put them in a file
 and specify that instead.
 
-    $ eyaml -n gpg -e -s "A secret string to encrypt" --gpg-recipients-file hiera-eyaml-gpg.recipients
+    $ eyaml encrypt -n gpg -s "A secret string to encrypt" --gpg-recipients-file hiera-eyaml-gpg.recipients
 
 In fact, when editing a file on disk and neither of the --gpg-recipient options are provided it will
 automatically look for a `hiera-eyaml-gpg.recipients` file in the same directory as the file being edited 
