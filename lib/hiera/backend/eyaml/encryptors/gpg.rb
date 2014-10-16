@@ -93,8 +93,9 @@ class Hiera
           end
 
           def self.encrypt plaintext
-            ENV["GNUPGHOME"] = self.option :gnupghome
-            debug("GNUPGHOME is #{ENV['GNUPGHOME']}")
+            gnupghome = self.option :gnupghome
+            GPGME::Engine.home_dir = gnupghome
+            debug("GNUPGHOME is #{gnupghome}")
 
             ctx = GPGME::Ctx.new
 
@@ -132,8 +133,9 @@ class Hiera
           end
 
           def self.decrypt ciphertext
-            ENV["GNUPGHOME"] = self.option :gnupghome
-            debug("GNUPGHOME is #{ENV['GNUPGHOME']}")
+            gnupghome = self.option :gnupghome
+            GPGME::Engine.home_dir = gnupghome
+            debug("GNUPGHOME is #{gnupghome}")
 
             ctx = if hiera?
               GPGME::Ctx.new
@@ -158,8 +160,8 @@ class Hiera
               txt.seek 0
               txt.read
             else
-              warn("No usable keys found in #{ENV['GNUPGHOME']}. Check :gpg_gnupghome value in hiera.yaml is correct")
-              raise ArgumentError, "No usable keys found in #{ENV['GNUPGHOME']}. Check :gpg_gnupghome value in hiera.yaml is correct"
+              warn("No usable keys found in #{gnupghome}. Check :gpg_gnupghome value in hiera.yaml is correct")
+              raise ArgumentError, "No usable keys found in #{gnupghome}. Check :gpg_gnupghome value in hiera.yaml is correct"
             end
           end
 
