@@ -25,6 +25,17 @@ To get started, install the hiera-eyaml-gpg gem.
 
     $ gem install hiera-eyaml-gpg
 
+You will also need to install either the `gpgme` (recommended) or `ruby_gpg` gem:
+
+    $ gem install gpgme
+
+OR
+
+    $ gem install ruby_gpg
+
+Note: you will need to use `ruby_gpg` with the Puppet server as it uses JRuby which cannot
+make use of native extensions such as `gpgme`.
+
 If you haven't already installed it, this requires and will install the hiera-eyaml gem, which you
 should probably acquint yourself with at https://github.com/TomPoulton/hiera-eyaml.
 
