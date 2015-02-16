@@ -150,7 +150,7 @@ class Hiera
 
             unless defined?(GPGME)
               RubyGpg.config.homedir = gnupghome if gnupghome
-              RubyGpg.decrypt_string(ciphertext)
+              return RubyGpg.decrypt_string(ciphertext)
             end
 
             GPGME::Engine.home_dir = gnupghome
