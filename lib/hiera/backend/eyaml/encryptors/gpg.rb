@@ -1,4 +1,12 @@
-require 'gpgme'
+begin
+  require 'gpgme'
+  gpg_impl = :gpgme
+rescue LoadError
+  # Default to ruby_gpg
+  require 'ruby_gpg'
+  gpg_impl = :ruby_gpg
+end
+
 require 'base64'
 require 'pathname'
 require 'hiera/backend/eyaml/encryptor'
@@ -94,13 +102,19 @@ class Hiera
 
           def self.encrypt plaintext
             gnupghome = self.option :gnupghome
-            GPGME::Engine.home_dir = gnupghome
             debug("GNUPGHOME is #{gnupghome}")
-
-            ctx = GPGME::Ctx.new
 
             recipients = self.find_recipients
             debug("Recipents are #{recipients}")
+
+            if gpg_impl == :ruby_gpg
+              RubyGpg.config.homedir = gnupghome if gnupghome
+              return RubyGpg.encrypt_string(plaintext, recipients)
+            end
+
+            GPGME::Engine.home_dir = gnupghome
+
+            ctx = GPGME::Ctx.new
 
             raise RecoverableError, 'No recipients provided, don\'t know who to encrypt to' if recipients.empty?
 
@@ -134,8 +148,14 @@ class Hiera
 
           def self.decrypt ciphertext
             gnupghome = self.option :gnupghome
-            GPGME::Engine.home_dir = gnupghome
             debug("GNUPGHOME is #{gnupghome}")
+
+            if gpg_impl == :ruby_gpg
+              RubyGpg.config.homedir = gnupghome if gnupghome
+              RubyGpg.decrypt_string(ciphertext)
+            end
+
+            GPGME::Engine.home_dir = gnupghome
 
             ctx = if hiera?
               GPGME::Ctx.new
