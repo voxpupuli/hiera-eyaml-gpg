@@ -1,8 +1,11 @@
 begin
   require 'gpgme'
 rescue LoadError
-  # Default to ruby_gpg
-  require 'ruby_gpg'
+  begin
+    require 'ruby_gpg'
+  rescue LoadError
+    fail "hiera-eyaml-gpg requires either the 'gpgme' or 'ruby_gpg' gem"
+  end
 end
 
 require 'base64'
