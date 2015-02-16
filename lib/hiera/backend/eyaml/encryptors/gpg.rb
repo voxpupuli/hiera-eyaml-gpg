@@ -1,10 +1,10 @@
 begin
   require 'gpgme'
-  gpg_impl = :gpgme
+  @gpg_impl = :gpgme
 rescue LoadError
   # Default to ruby_gpg
   require 'ruby_gpg'
-  gpg_impl = :ruby_gpg
+  @gpg_impl = :ruby_gpg
 end
 
 require 'base64'
@@ -107,7 +107,7 @@ class Hiera
             recipients = self.find_recipients
             debug("Recipents are #{recipients}")
 
-            if gpg_impl == :ruby_gpg
+            if @gpg_impl == :ruby_gpg
               RubyGpg.config.homedir = gnupghome if gnupghome
               return RubyGpg.encrypt_string(plaintext, recipients)
             end
@@ -150,7 +150,7 @@ class Hiera
             gnupghome = self.option :gnupghome
             debug("GNUPGHOME is #{gnupghome}")
 
-            if gpg_impl == :ruby_gpg
+            if @gpg_impl == :ruby_gpg
               RubyGpg.config.homedir = gnupghome if gnupghome
               RubyGpg.decrypt_string(ciphertext)
             end
