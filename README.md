@@ -31,7 +31,7 @@ You will also need to install either the `gpgme` (recommended) or `ruby_gpg` gem
 
 OR
 
-    $ gem install ruby_gpg
+    $ gem install ruby_gpg -v ">=0.3.1"
 
 Note: you will need to use `ruby_gpg` with the Puppet server as it uses JRuby which cannot
 make use of native extensions such as `gpgme`.
