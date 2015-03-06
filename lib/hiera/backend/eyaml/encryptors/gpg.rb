@@ -102,20 +102,18 @@ class Hiera
           end
 
           def self.encrypt plaintext
+            unless defined?(GPGME)
+              raise RecoverableError, "Encryption is only supported when using the 'gpgme' gem"
+            end
+
             gnupghome = self.option :gnupghome
+            GPGME::Engine.home_dir = gnupghome
             debug("GNUPGHOME is #{gnupghome}")
+
+            ctx = GPGME::Ctx.new
 
             recipients = self.find_recipients
             debug("Recipents are #{recipients}")
-
-            unless defined?(GPGME)
-              RubyGpg.config.homedir = gnupghome if gnupghome
-              return RubyGpg.encrypt_string(plaintext, recipients)
-            end
-
-            GPGME::Engine.home_dir = gnupghome
-
-            ctx = GPGME::Ctx.new
 
             raise RecoverableError, 'No recipients provided, don\'t know who to encrypt to' if recipients.empty?
 
