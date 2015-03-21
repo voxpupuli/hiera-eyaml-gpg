@@ -1,4 +1,13 @@
-require 'gpgme'
+begin
+  require 'gpgme'
+rescue LoadError
+  begin
+    require 'ruby_gpg'
+  rescue LoadError
+    fail "hiera-eyaml-gpg requires either the 'gpgme' or 'ruby_gpg' gem"
+  end
+end
+
 require 'base64'
 require 'pathname'
 require 'hiera/backend/eyaml/encryptor'
@@ -93,6 +102,10 @@ class Hiera
           end
 
           def self.encrypt plaintext
+            unless defined?(GPGME)
+              raise RecoverableError, "Encryption is only supported when using the 'gpgme' gem"
+            end
+
             gnupghome = self.option :gnupghome
             GPGME::Engine.home_dir = gnupghome
             debug("GNUPGHOME is #{gnupghome}")
@@ -134,8 +147,14 @@ class Hiera
 
           def self.decrypt ciphertext
             gnupghome = self.option :gnupghome
-            GPGME::Engine.home_dir = gnupghome
             debug("GNUPGHOME is #{gnupghome}")
+
+            unless defined?(GPGME)
+              RubyGpg.config.homedir = gnupghome if gnupghome
+              return RubyGpg.decrypt_string(ciphertext)
+            end
+
+            GPGME::Engine.home_dir = gnupghome
 
             ctx = if hiera?
               GPGME::Ctx.new

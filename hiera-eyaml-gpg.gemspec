@@ -18,5 +18,4 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.add_dependency('hiera-eyaml', '>=1.3.8')
-  gem.add_dependency('gpgme', '>=2.0.0')
 end
