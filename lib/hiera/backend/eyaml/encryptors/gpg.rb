@@ -26,7 +26,7 @@ class Hiera
           self.options = {
             :gnupghome => { :desc => "Location of your GNUPGHOME directory",
                             :type => :string,
-                            :default => "#{ENV["HOME"]}/.gnupg" },
+                            :default => "#{ENV[["HOME", "HOMEPATH"].detect("/etc/puppet") { |h| ENV[h] != nil }]}/.gnupg" },
             :always_trust => { :desc => "Assume that used keys are fully trusted",
                                :type => :boolean,
                                :default => false },
