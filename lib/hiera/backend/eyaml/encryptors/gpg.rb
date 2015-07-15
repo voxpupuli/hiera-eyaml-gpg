@@ -26,7 +26,7 @@ class Hiera
           self.options = {
             :gnupghome => { :desc => "Location of your GNUPGHOME directory",
                             :type => :string,
-                            :default => "#{ENV[["HOME", "HOMEPATH"].detect { |h| ENV[h] != nil }]}/.gnupg" },
+                            :default => "#{["HOME", "HOMEPATH"].reject { |h| ENV[h].nil? }.map { |h| ENV[h]+"/.gnupg" }.first || ""}",
             :always_trust => { :desc => "Assume that used keys are fully trusted",
                                :type => :boolean,
                                :default => false },
@@ -60,7 +60,7 @@ class Hiera
           def self.gnupghome
             gnupghome = self.option :gnupghome
             debug("GNUPGHOME is #{gnupghome}")
-            if gnupghome.nil?
+            if gnupghome.nil? || gnupghome.empty?
               warn("No GPG home directory configured, check gpg_gnupghome configuration value is correct")
               raise ArgumentError, "No GPG home directory configured, check gpg_gnupghome configuration value is correct"
             elsif !File.directory?(gnupghome)
