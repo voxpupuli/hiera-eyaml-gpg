@@ -26,7 +26,7 @@ class Hiera
           self.options = {
             :gnupghome => { :desc => "Location of your GNUPGHOME directory",
                             :type => :string,
-                            :default => "#{ENV[["HOME", "HOMEPATH"].detect { |h| ENV[h] != nil }]}/.gnupg" },
+                            :default => "#{["HOME", "HOMEPATH"].reject { |h| ENV[h].nil? }.map { |h| ENV[h]+"/.gnupg" }.first || ""}",
             :always_trust => { :desc => "Assume that used keys are fully trusted",
                                :type => :boolean,
                                :default => false },
@@ -55,6 +55,20 @@ class Hiera
                 (0 ... $_.length).each do |i| $_[i] = ?0 end if $_
                   system('stty echo')
               end
+          end
+
+          def self.gnupghome
+            gnupghome = self.option :gnupghome
+            debug("GNUPGHOME is #{gnupghome}")
+            if gnupghome.nil? || gnupghome.empty?
+              warn("No GPG home directory configured, check gpg_gnupghome configuration value is correct")
+              raise ArgumentError, "No GPG home directory configured, check gpg_gnupghome configuration value is correct"
+            elsif !File.directory?(gnupghome)
+              warn("Configured GPG home directory #{gnupghome} doesn't exist, check gpg_gnupghome configuration value is correct")
+              raise ArgumentError, "Configured GPG home directory #{gnupghome} doesn't exist, check gpg_gnupghome configuration value is correct"
+            else
+              gnupghome
+            end
           end
 
           def self.find_recipients
@@ -86,7 +100,7 @@ class Hiera
                   selected_file = nil
                   path.descend{|path| path
                     potential_file = path.join('hiera-eyaml-gpg.recipients')
-                    selected_file = potential_file if potential_file.exist? 
+                    selected_file = potential_file if potential_file.exist?
                   }
                   debug("Using file at #{selected_file}")
                   selected_file
@@ -108,9 +122,7 @@ class Hiera
               raise RecoverableError, "Encryption is only supported when using the 'gpgme' gem"
             end
 
-            gnupghome = self.option :gnupghome
-            GPGME::Engine.home_dir = gnupghome
-            debug("GNUPGHOME is #{gnupghome}")
+            GPGME::Engine.home_dir = self.gnupghome
 
             ctx = GPGME::Ctx.new
 
@@ -119,9 +131,9 @@ class Hiera
 
             raise RecoverableError, 'No recipients provided, don\'t know who to encrypt to' if recipients.empty?
 
-            keys = recipients.map {|r| 
-              key_to_use = ctx.keys(r).first 
-              if key_to_use.nil? 
+            keys = recipients.map {|r|
+              key_to_use = ctx.keys(r).first
+              if key_to_use.nil?
                 raise RecoverableError, "No key found on keyring for #{r}"
               end
               key_to_use
@@ -148,8 +160,7 @@ class Hiera
           end
 
           def self.decrypt ciphertext
-            gnupghome = self.option :gnupghome
-            debug("GNUPGHOME is #{gnupghome}")
+            gnupghome = self.gnupghome
 
             unless defined?(GPGME)
               RubyGpg.config.homedir = gnupghome if gnupghome
