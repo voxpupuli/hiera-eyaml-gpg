@@ -73,6 +73,13 @@ configure `:gpg_gnupghome:` in your hiera.yaml (under the `:eyaml:` section). Th
 directory that contains the keyring etc for the user that can to decrypt the hiera data. Please note
 that the private GPG key must not have a passphrase.
 
+For command line uses such as `puppet lookup` where the `gpg_gnupghome` setting in the `hiera.yaml`
+configuration does not match a directory the user has access to, you can override the `gpg_gnupghome`
+setting by setting the path in the environment variable `HIERA_EYAML_GPG_GNUPGHOME` and, if set, that
+will be used instead of `gpg_gnupghome`.
+
+    $ HIERA_EYAML_GPG_GNUPGHOME=~/.gnupg puppet lookup my_key
+
 Authors
 -------
 
