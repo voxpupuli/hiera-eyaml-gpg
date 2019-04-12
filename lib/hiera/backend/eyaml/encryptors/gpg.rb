@@ -6,6 +6,7 @@ rescue LoadError
   rescue LoadError
     fail "hiera-eyaml-gpg requires either the 'gpgme' or 'ruby_gpg' gem"
   end
+  require 'hiera/backend/eyaml/encryptors/gpg/puppet_gpg'
 end
 
 require 'base64'
@@ -163,8 +164,9 @@ class Hiera
             gnupghome = self.gnupghome
 
             unless defined?(GPGME)
-              RubyGpg.config.homedir = gnupghome if gnupghome
-              return RubyGpg.decrypt_string(ciphertext)
+              gpg = Hiera::Backend::Eyaml::GpgPuppetserver
+              gpg.config.homedir = gnupghome if gnupghome
+              return gpg.decrypt_string(ciphertext)
             end
 
             GPGME::Engine.home_dir = gnupghome
