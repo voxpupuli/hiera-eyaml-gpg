@@ -1,7 +1,10 @@
 hiera-eyaml-gpg
 ===============
 
-GPG encryption backend for the [hiera-eyaml](https://github.com/TomPoulton/hiera-eyaml) module.
+[![Gem Version](https://img.shields.io/gem/v/hiera-eyaml-gpg.svg)](https://rubygems.org/gems/hiera-eyaml-gpg)
+[![Gem Downloads](https://img.shields.io/gem/dt/hiera-eyaml-gpg.svg)](https://rubygems.org/gems/hiera-eyaml-gpg)
+
+GPG encryption backend for the [hiera-eyaml](https://github.com/voxpupuli/hiera-eyaml) module.
 
 Motivation
 ----------
