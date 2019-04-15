@@ -71,10 +71,43 @@ Use `eyaml --help` for more details or look at the hiera-eyaml docs.
 
 ### Configuring hiera
 
-Assuming you have a working `hiera` and `hiera-eyaml` then the only option you need to add is to
-configure `:gpg_gnupghome:` in your hiera.yaml (under the `:eyaml:` section). This should be the
-directory that contains the keyring etc for the user that can to decrypt the hiera data. Please note
-that the private GPG key must not have a passphrase.
+This assumes you have a working `hiera` and `hiera-eyaml`. Please note that the private GPG key must not
+have a passphrase.
+
+Each level of the hierarchy must specify the `gpg_gnupghome` option with the path to the keyring as well
+as specifying `lookup_key` with the value `eyaml_lookup_key`. The following example shows a simple hierarchy.
+
+```yaml
+---
+version: 5
+defaults:
+hierarchy:
+  - name: "Per-node data (yaml version)"
+    lookup_key: eyaml_lookup_key
+    options:
+      gpg_gnupghome: /opt/puppetlabs/server/data/puppetserver/.gnupg
+    path: "nodes/%{::trusted.certname}.yaml"
+  - name: "Role data"
+    lookup_key: eyaml_lookup_key
+    options:
+      gpg_gnupghome: /opt/puppetlabs/server/data/puppetserver/.gnupg
+    paths:
+      - "role/%{facts.role}.yaml"
+  - name: "Per platform data"
+    lookup_key: eyaml_lookup_key
+    options:
+      gpg_gnupghome: /opt/puppetlabs/server/data/puppetserver/.gnupg
+    paths:
+      - "kernel/%{::kernel}.yaml"
+      - "osfamily/%{::osfamily}.yaml"
+      - "osfamily/%{::osfamily}-%{::operatingsystemmajrelease}.yaml"
+  - name: "Default"
+    lookup_key: eyaml_lookup_key
+    options:
+      gpg_gnupghome: /opt/puppetlabs/server/data/puppetserver/.gnupg
+    paths:
+      - "common.yaml"
+```
 
 Authors
 -------
