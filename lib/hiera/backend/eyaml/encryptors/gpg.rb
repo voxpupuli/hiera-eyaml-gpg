@@ -19,7 +19,6 @@ class Hiera
   module Backend
     module Eyaml
       module Encryptors
-
         class Gpg < Encryptor
 
           self.tag = 'GPG'
@@ -208,7 +207,6 @@ class Hiera
           end
 
         end
-
       end
     end
   end
