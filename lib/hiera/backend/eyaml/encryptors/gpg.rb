@@ -40,7 +40,7 @@ class Hiera
           def self.passfunc(hook, uid_hint, passphrase_info, prev_was_bad, fd)
             system('stty -echo')
 
-            unless @@passphrase_cache.has_key?(uid_hint)
+            unless @@passphrase_cache.key?(uid_hint)
               @@passphrase_cache[uid_hint] = ask("Enter passphrase for #{uid_hint}: ") { |q| q.echo = '' }
               $stderr.puts
             end
