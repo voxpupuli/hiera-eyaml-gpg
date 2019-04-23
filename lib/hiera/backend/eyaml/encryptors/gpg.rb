@@ -37,7 +37,7 @@ class Hiera
 
           @@passphrase_cache = {}
 
-          def self.passfunc(hook, uid_hint, passphrase_info, prev_was_bad, fd)
+          def self.passfunc(_hook, uid_hint, _passphrase_info, _prev_was_bad, fd)
             system('stty -echo')
 
             unless @@passphrase_cache.key?(uid_hint)
