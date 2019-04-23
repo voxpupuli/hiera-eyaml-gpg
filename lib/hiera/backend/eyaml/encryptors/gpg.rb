@@ -74,47 +74,46 @@ class Hiera
 
           def self.find_recipients
             recipient_option = option :recipients
-            recipients = if !recipient_option.nil?
-                           debug('Using --recipients option')
-                           recipient_option.split(',')
-                         else
-                           recipient_file_option = option :recipients_file
-                           recipient_file = if !recipient_file_option.nil?
-                                              debug('Using --recipients-file option')
-                                              Pathname.new(recipient_file_option)
-                                            else
-                                              debug('Searching for any hiera-eyaml-gpg.recipients files in path')
-                                              # if we are editing a file, look for a hiera-eyaml-gpg.recipients file
-                                              filename = case Eyaml::Options[:source]
-                                                         when :file
-                                                           Eyaml::Options[:file]
-                                                         when :eyaml
-                                                           Eyaml::Options[:eyaml]
-                                                         end
 
-                                              if filename.nil?
-                                                nil
-                                              else
-                                                path = Pathname.new(filename).realpath.dirname
-                                                selected_file = nil
-                                                path.descend do |path|
-                                                  path
-                                                  potential_file = path.join('hiera-eyaml-gpg.recipients')
-                                                  selected_file = potential_file if potential_file.exist?
-                                                end
-                                                debug("Using file at #{selected_file}")
-                                                selected_file
-                                              end
-                                            end
+            unless recipient_option.nil?
+              debug('Using --recipients option')
+              return recipient_option.split(',')
+            end
 
-                           if recipient_file.nil?
-                             []
-                           else
-                             recipient_file.readlines.map do |line|
-                               line.strip unless line.start_with?('#') || line.strip.empty?
-                             end.compact
-                           end
-                         end
+            recipient_file_option = option :recipients_file
+            recipient_file = if !recipient_file_option.nil?
+                               debug('Using --recipients-file option')
+                               Pathname.new(recipient_file_option)
+                             else
+                               debug('Searching for any hiera-eyaml-gpg.recipients files in path')
+                               # if we are editing a file, look for a hiera-eyaml-gpg.recipients file
+                               filename = case Eyaml::Options[:source]
+                                          when :file
+                                            Eyaml::Options[:file]
+                                          when :eyaml
+                                            Eyaml::Options[:eyaml]
+                                          end
+
+                               if filename.nil?
+                                 nil
+                               else
+                                 path = Pathname.new(filename).realpath.dirname
+                                 selected_file = nil
+                                 path.descend do |path|
+                                   path
+                                   potential_file = path.join('hiera-eyaml-gpg.recipients')
+                                   selected_file = potential_file if potential_file.exist?
+                                 end
+                                 debug("Using file at #{selected_file}")
+                                 selected_file
+                               end
+                             end
+
+            return [] if recipient_file.nil?
+
+            recipient_file.readlines.map do |line|
+              line.strip unless line.start_with?('#') || line.strip.empty?
+            end.compact
           end
 
           def self.encrypt(plaintext)
