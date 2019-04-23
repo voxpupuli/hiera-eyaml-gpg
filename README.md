@@ -45,6 +45,16 @@ should probably acquaint yourself with at https://github.com/TomPoulton/hiera-ey
 Note that in order to install the gpgme gem you'll need to have the ruby development package installed
 for your distribution.
 
+For use on puppetserver
+---
+
+As root
+
+```sh
+/opt/puppetlabs/puppet/bin/gem install hiera-eyaml-gpg ruby_gpg
+/opt/puppetlabs/server/bin/puppetserver gem install hiera-eyaml-gpg ruby_gpg
+```
+
 How to use
 ----------
 
