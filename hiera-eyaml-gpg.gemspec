@@ -4,7 +4,7 @@ require 'hiera/backend/eyaml/encryptors/gpg/version'
 
 Gem::Specification.new do |gem|
   gem.name          = 'hiera-eyaml-gpg'
-  gem.version       = Hiera::Backend::Eyaml::Encryptors::Gpg::VERSION
+  gem.version       = Hiera::Backend::Eyaml::Encryptors::GpgVersion::VERSION
   gem.description   = 'GPG encryptor for use with hiera-eyaml'
   gem.summary       = 'Encryption plugin for hiera-eyaml backend for Hiera'
   gem.author        = 'Simon Hildrew'
