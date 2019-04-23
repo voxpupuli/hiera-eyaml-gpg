@@ -38,22 +38,20 @@ class Hiera
           @@passphrase_cache = Hash.new
 
           def self.passfunc(hook, uid_hint, passphrase_info, prev_was_bad, fd)
-            begin
-                system('stty -echo')
+            system('stty -echo')
 
-                unless @@passphrase_cache.has_key?(uid_hint)
-                  @@passphrase_cache[uid_hint] = ask("Enter passphrase for #{uid_hint}: ") { |q| q.echo = '' }
-                  $stderr.puts
-                end
-                passphrase = @@passphrase_cache[uid_hint]
+            unless @@passphrase_cache.has_key?(uid_hint)
+              @@passphrase_cache[uid_hint] = ask("Enter passphrase for #{uid_hint}: ") { |q| q.echo = '' }
+              $stderr.puts
+            end
+            passphrase = @@passphrase_cache[uid_hint]
 
-                io = IO.for_fd(fd, 'w')
-                io.puts(passphrase)
-                io.flush
-              ensure
-                (0...$LAST_READ_LINE.length).each { |i| $LAST_READ_LINE[i] = ?0 } if $LAST_READ_LINE
-                system('stty echo')
-              end
+            io = IO.for_fd(fd, 'w')
+            io.puts(passphrase)
+            io.flush
+          ensure
+            (0...$LAST_READ_LINE.length).each { |i| $LAST_READ_LINE[i] = ?0 } if $LAST_READ_LINE
+            system('stty echo')
           end
 
           def self.gnupghome
