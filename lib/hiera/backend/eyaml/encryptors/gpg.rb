@@ -51,7 +51,7 @@ class Hiera
                 io.puts(passphrase)
                 io.flush
               ensure
-                (0...$_.length).each { |i| $_[i] = ?0 } if $_
+                (0...$LAST_READ_LINE.length).each { |i| $LAST_READ_LINE[i] = ?0 } if $LAST_READ_LINE
                 system('stty echo')
               end
           end
