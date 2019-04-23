@@ -34,7 +34,7 @@ class Hiera
             :recipients => { :desc => 'List of recipients (comma separated)',
                              :type => :string },
             :recipients_file => { :desc => 'File containing a list of recipients (one on each line)',
-                             :type => :string }
+                                  :type => :string }
           }
 
           @@passphrase_cache = Hash.new
