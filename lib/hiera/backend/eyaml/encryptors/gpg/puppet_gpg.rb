@@ -8,7 +8,7 @@ class Hiera
         extend RubyGpg
 
         def self.run_command(command, input = nil)
-          tmpfile = Puppet::FileSystem::Uniquefile.new('puppet-eyaml-hiera-gpg-input', modes: File::WRONLY|File::BINARY)
+          tmpfile = Puppet::FileSystem::Uniquefile.new('puppet-eyaml-hiera-gpg-input', modes: File::WRONLY | File::BINARY)
           tmpfile.write(input)
           tmpfile.close
 
