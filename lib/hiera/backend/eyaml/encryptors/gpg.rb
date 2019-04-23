@@ -114,7 +114,7 @@ class Hiera
 
               unless recipient_file.nil?
                 recipient_file.readlines.map{ |line|
-                  line.strip unless line.start_with? '#'
+                  line.strip unless line.start_with? '#' or line.strip.empty?
                 }.compact
               else
                 []
