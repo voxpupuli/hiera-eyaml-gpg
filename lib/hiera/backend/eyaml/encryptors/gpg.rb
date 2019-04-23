@@ -25,16 +25,16 @@ class Hiera
           self.tag = 'GPG'
 
           self.options = {
-            :gnupghome => { :desc => 'Location of your GNUPGHOME directory',
-                            :type => :string,
-                            :default => "#{["HOME", "HOMEPATH"].reject { |h| ENV[h].nil? }.map { |h| ENV[h]+"/.gnupg" }.first || ""}"},
-            :always_trust => { :desc => 'Assume that used keys are fully trusted',
-                               :type => :boolean,
-                               :default => false },
-            :recipients => { :desc => 'List of recipients (comma separated)',
-                             :type => :string },
-            :recipients_file => { :desc => 'File containing a list of recipients (one on each line)',
-                                  :type => :string }
+            gnupghome: { desc: 'Location of your GNUPGHOME directory',
+                         type: :string,
+                         default: "#{["HOME", "HOMEPATH"].reject { |h| ENV[h].nil? }.map { |h| ENV[h]+"/.gnupg" }.first || ""}"},
+            always_trust: { desc: 'Assume that used keys are fully trusted',
+                            type: :boolean,
+                            default: false },
+            recipients: { desc: 'List of recipients (comma separated)',
+                          type: :string },
+            recipients_file: { desc: 'File containing a list of recipients (one on each line)',
+                               type: :string }
           }
 
           @@passphrase_cache = Hash.new
@@ -157,9 +157,9 @@ class Hiera
             end
 
             data = GPGME::Data.from_str(plaintext)
-            crypto = GPGME::Crypto.new(:always_trust => always_trust)
+            crypto = GPGME::Crypto.new(always_trust: always_trust)
 
-            ciphertext = crypto.encrypt(data, :recipients => keys)
+            ciphertext = crypto.encrypt(data, recipients: keys)
             ciphertext.seek 0
             ciphertext.read
           end
@@ -178,7 +178,7 @@ class Hiera
             ctx = if hiera?
               GPGME::Ctx.new
             else
-              GPGME::Ctx.new(:passphrase_callback => method(:passfunc))
+              GPGME::Ctx.new(passphrase_callback: method(:passfunc))
             end
 
             if !ctx.keys.empty?
