@@ -102,9 +102,9 @@ class Hiera
                                               else
                                                 path = Pathname.new(filename).realpath.dirname
                                                 selected_file = nil
-                                                path.descend{|path| path
-                                                                    potential_file = path.join('hiera-eyaml-gpg.recipients')
-                                                                    selected_file = potential_file if potential_file.exist?
+                                                path.descend {|path| path
+                                                                     potential_file = path.join('hiera-eyaml-gpg.recipients')
+                                                                     selected_file = potential_file if potential_file.exist?
                                                 }
                                                 debug("Using file at #{selected_file}")
                                                 selected_file
@@ -114,7 +114,7 @@ class Hiera
                            if recipient_file.nil?
                              []
                            else
-                             recipient_file.readlines.map{ |line|
+                             recipient_file.readlines.map { |line|
                                line.strip unless line.start_with? '#' or line.strip.empty?
                              }.compact
                            end
