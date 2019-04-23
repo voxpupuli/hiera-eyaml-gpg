@@ -35,7 +35,7 @@ class Hiera
                                type: :string }
           }
 
-          @@passphrase_cache = Hash.new
+          @@passphrase_cache = {}
 
           def self.passfunc(hook, uid_hint, passphrase_info, prev_was_bad, fd)
             system('stty -echo')
