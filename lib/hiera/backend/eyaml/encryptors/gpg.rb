@@ -20,7 +20,6 @@ class Hiera
     module Eyaml
       module Encryptors
         class Gpg < Encryptor
-
           self.tag = 'GPG'
 
           self.options = {
@@ -205,7 +204,6 @@ class Hiera
           def self.create_keys
             STDERR.puts 'The GPG encryptor does not support creation of keys, use the GPG command lines tools instead'
           end
-
         end
       end
     end
