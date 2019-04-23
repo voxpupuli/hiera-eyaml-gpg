@@ -4,7 +4,7 @@ rescue LoadError
   begin
     require 'ruby_gpg'
   rescue LoadError
-    fail "hiera-eyaml-gpg requires either the 'gpgme' or 'ruby_gpg' gem"
+    raise "hiera-eyaml-gpg requires either the 'gpgme' or 'ruby_gpg' gem"
   end
   require 'hiera/backend/eyaml/encryptors/gpg/puppet_gpg'
 end
