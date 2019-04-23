@@ -59,7 +59,11 @@ class Hiera
           end
 
           def self.gnupghome
-            gnupghome = self.option :gnupghome
+            gnupghome = if ENV['HIERA_EYAML_GPG_GNUPGHOME'].nil?
+                          self.option :gnupghome
+                        else
+                          ENV['HIERA_EYAML_GPG_GNUPGHOME']
+                        end
             debug("GNUPGHOME is #{gnupghome}")
             if gnupghome.nil? || gnupghome.empty?
               warn("No GPG home directory configured, check gpg_gnupghome configuration value is correct")
