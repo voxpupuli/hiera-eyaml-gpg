@@ -90,8 +90,6 @@ class Hiera
                                                            Eyaml::Options[:file]
                                                          when :eyaml
                                                            Eyaml::Options[:eyaml]
-                                                         else
-                                                           nil
                                                          end
 
                                               if filename.nil?
