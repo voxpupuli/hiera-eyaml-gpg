@@ -101,9 +101,9 @@ class Hiera
                                               else
                                                 path = Pathname.new(filename).realpath.dirname
                                                 selected_file = nil
-                                                path.descend {|path| path
-                                                                     potential_file = path.join('hiera-eyaml-gpg.recipients')
-                                                                     selected_file = potential_file if potential_file.exist?
+                                                path.descend { |path| path
+                                                                      potential_file = path.join('hiera-eyaml-gpg.recipients')
+                                                                      selected_file = potential_file if potential_file.exist?
                                                 }
                                                 debug("Using file at #{selected_file}")
                                                 selected_file
@@ -134,7 +134,7 @@ class Hiera
 
             raise RecoverableError, 'No recipients provided, don\'t know who to encrypt to' if recipients.empty?
 
-            keys = recipients.map {|r|
+            keys = recipients.map { |r|
               key_to_use = ctx.keys(r).first
               if key_to_use.nil?
                 raise RecoverableError, "No key found on keyring for #{r}"
