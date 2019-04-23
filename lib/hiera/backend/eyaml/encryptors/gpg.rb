@@ -4,7 +4,7 @@ rescue LoadError
   begin
     require 'ruby_gpg'
   rescue LoadError
-    fail "hiera-eyaml-gpg requires either the 'gpgme' or 'ruby_gpg' gem"
+    raise "hiera-eyaml-gpg requires either the 'gpgme' or 'ruby_gpg' gem"
   end
   require 'hiera/backend/eyaml/encryptors/gpg/puppet_gpg'
 end
@@ -19,55 +19,51 @@ class Hiera
   module Backend
     module Eyaml
       module Encryptors
-
         class Gpg < Encryptor
-
-          self.tag = "GPG"
+          self.tag = 'GPG'
 
           self.options = {
-            :gnupghome => { :desc => "Location of your GNUPGHOME directory",
-                            :type => :string,
-                            :default => "#{["HOME", "HOMEPATH"].reject { |h| ENV[h].nil? }.map { |h| ENV[h]+"/.gnupg" }.first || ""}"},
-            :always_trust => { :desc => "Assume that used keys are fully trusted",
-                               :type => :boolean,
-                               :default => false },
-            :recipients => { :desc => "List of recipients (comma separated)",
-                             :type => :string },
-            :recipients_file => { :desc => "File containing a list of recipients (one on each line)",
-                             :type => :string }
+            gnupghome: { desc: 'Location of your GNUPGHOME directory',
+                         type: :string,
+                         default: (%w[HOME HOMEPATH].reject { |h| ENV[h].nil? }.map { |h| ENV[h] + '/.gnupg' }.first || '').to_s },
+            always_trust: { desc: 'Assume that used keys are fully trusted',
+                            type: :boolean,
+                            default: false },
+            recipients: { desc: 'List of recipients (comma separated)',
+                          type: :string },
+            recipients_file: { desc: 'File containing a list of recipients (one on each line)',
+                               type: :string }
           }
 
-          @@passphrase_cache = Hash.new
+          @@passphrase_cache = {}
 
-          def self.passfunc(hook, uid_hint, passphrase_info, prev_was_bad, fd)
-            begin
-                system('stty -echo')
+          def self.passfunc(_hook, uid_hint, _passphrase_info, _prev_was_bad, fd)
+            system('stty -echo')
 
-                unless @@passphrase_cache.has_key?(uid_hint)
-                  @@passphrase_cache[uid_hint] = ask("Enter passphrase for #{uid_hint}: ") { |q| q.echo = '' }
-                  $stderr.puts
-                end
-                passphrase = @@passphrase_cache[uid_hint]
+            unless @@passphrase_cache.key?(uid_hint)
+              @@passphrase_cache[uid_hint] = ask("Enter passphrase for #{uid_hint}: ") { |q| q.echo = '' }
+              $stderr.puts
+            end
+            passphrase = @@passphrase_cache[uid_hint]
 
-                io = IO.for_fd(fd, 'w')
-                io.puts(passphrase)
-                io.flush
-              ensure
-                (0 ... $_.length).each do |i| $_[i] = ?0 end if $_
-                  system('stty echo')
-              end
+            io = IO.for_fd(fd, 'w')
+            io.puts(passphrase)
+            io.flush
+          ensure
+            (0...$LAST_READ_LINE.length).each { |i| $LAST_READ_LINE[i] = '0' } if $LAST_READ_LINE
+            system('stty echo')
           end
 
           def self.gnupghome
             gnupghome = if ENV['HIERA_EYAML_GPG_GNUPGHOME'].nil?
-                          self.option :gnupghome
+                          option :gnupghome
                         else
                           ENV['HIERA_EYAML_GPG_GNUPGHOME']
                         end
             debug("GNUPGHOME is #{gnupghome}")
             if gnupghome.nil? || gnupghome.empty?
-              warn("No GPG home directory configured, check gpg_gnupghome configuration value is correct")
-              raise ArgumentError, "No GPG home directory configured, check gpg_gnupghome configuration value is correct"
+              warn('No GPG home directory configured, check gpg_gnupghome configuration value is correct')
+              raise ArgumentError, 'No GPG home directory configured, check gpg_gnupghome configuration value is correct'
             elsif !File.directory?(gnupghome)
               warn("Configured GPG home directory #{gnupghome} doesn't exist, check gpg_gnupghome configuration value is correct")
               raise ArgumentError, "Configured GPG home directory #{gnupghome} doesn't exist, check gpg_gnupghome configuration value is correct"
@@ -77,75 +73,76 @@ class Hiera
           end
 
           def self.find_recipients
-            recipient_option = self.option :recipients
+            recipient_option = option :recipients
             recipients = if !recipient_option.nil?
-              debug("Using --recipients option")
-              recipient_option.split(",")
-            else
-              recipient_file_option = self.option :recipients_file
-              recipient_file = if !recipient_file_option.nil?
-                debug("Using --recipients-file option")
-                Pathname.new(recipient_file_option)
-              else
-                debug("Searching for any hiera-eyaml-gpg.recipients files in path")
-                # if we are editing a file, look for a hiera-eyaml-gpg.recipients file
-                filename = case Eyaml::Options[:source]
-                when :file
-                  Eyaml::Options[:file]
-                when :eyaml
-                  Eyaml::Options[:eyaml]
-                else
-                  nil
-                end
+                           debug('Using --recipients option')
+                           recipient_option.split(',')
+                         else
+                           recipient_file_option = option :recipients_file
+                           recipient_file = if !recipient_file_option.nil?
+                                              debug('Using --recipients-file option')
+                                              Pathname.new(recipient_file_option)
+                                            else
+                                              debug('Searching for any hiera-eyaml-gpg.recipients files in path')
+                                              # if we are editing a file, look for a hiera-eyaml-gpg.recipients file
+                                              filename = case Eyaml::Options[:source]
+                                                         when :file
+                                                           Eyaml::Options[:file]
+                                                         when :eyaml
+                                                           Eyaml::Options[:eyaml]
+                                                         else
+                                                           nil
+                                              end
 
-                if filename.nil?
-                  nil
-                else
-                  path = Pathname.new(filename).realpath.dirname
-                  selected_file = nil
-                  path.descend{|path| path
-                    potential_file = path.join('hiera-eyaml-gpg.recipients')
-                    selected_file = potential_file if potential_file.exist?
-                  }
-                  debug("Using file at #{selected_file}")
-                  selected_file
-                end
-              end
+                                              if filename.nil?
+                                                nil
+                                              else
+                                                path = Pathname.new(filename).realpath.dirname
+                                                selected_file = nil
+                                                path.descend do |path|
+                                                  path
+                                                  potential_file = path.join('hiera-eyaml-gpg.recipients')
+                                                  selected_file = potential_file if potential_file.exist?
+                                                end
+                                                debug("Using file at #{selected_file}")
+                                                selected_file
+                                              end
+                           end
 
-              unless recipient_file.nil?
-                recipient_file.readlines.map{ |line|
-                  line.strip unless line.start_with? '#' or line.strip.empty?
-                }.compact
-              else
-                []
-              end
+                           if recipient_file.nil?
+                             []
+                           else
+                             recipient_file.readlines.map do |line|
+                               line.strip unless line.start_with?('#') || line.strip.empty?
+                             end.compact
+                           end
             end
           end
 
-          def self.encrypt plaintext
+          def self.encrypt(plaintext)
             unless defined?(GPGME)
               raise RecoverableError, "Encryption is only supported when using the 'gpgme' gem"
             end
 
-            GPGME::Engine.home_dir = self.gnupghome
+            GPGME::Engine.home_dir = gnupghome
 
             ctx = GPGME::Ctx.new
 
-            recipients = self.find_recipients
+            recipients = find_recipients
             debug("Recipents are #{recipients}")
 
             raise RecoverableError, 'No recipients provided, don\'t know who to encrypt to' if recipients.empty?
 
-            keys = recipients.map {|r|
+            keys = recipients.map do |r|
               key_to_use = ctx.keys(r).first
               if key_to_use.nil?
                 raise RecoverableError, "No key found on keyring for #{r}"
               end
               key_to_use
-            }
+            end
             debug("Keys: #{keys}")
 
-            always_trust = self.option(:always_trust)
+            always_trust = option(:always_trust)
             unless always_trust
               # check validity of recipients (this is possibly naive, but better than the unhelpful
               # error that it would spit out otherwise)
@@ -157,14 +154,14 @@ class Hiera
             end
 
             data = GPGME::Data.from_str(plaintext)
-            crypto = GPGME::Crypto.new(:always_trust => always_trust)
+            crypto = GPGME::Crypto.new(always_trust: always_trust)
 
-            ciphertext = crypto.encrypt(data, :recipients => keys)
+            ciphertext = crypto.encrypt(data, recipients: keys)
             ciphertext.seek 0
             ciphertext.read
           end
 
-          def self.decrypt ciphertext
+          def self.decrypt(ciphertext)
             gnupghome = self.gnupghome
 
             unless defined?(GPGME)
@@ -176,9 +173,9 @@ class Hiera
             GPGME::Engine.home_dir = gnupghome
 
             ctx = if hiera?
-              GPGME::Ctx.new
-            else
-              GPGME::Ctx.new(:passphrase_callback => method(:passfunc))
+                    GPGME::Ctx.new
+                  else
+                    GPGME::Ctx.new(passphrase_callback: method(:passfunc))
             end
 
             if !ctx.keys.empty?
@@ -188,10 +185,10 @@ class Hiera
               begin
                 txt = ctx.decrypt(raw)
               rescue GPGME::Error::DecryptFailed => e
-                warn("Fatal: Failed to decrypt ciphertext (check settings and that you are a recipient)")
+                warn('Fatal: Failed to decrypt ciphertext (check settings and that you are a recipient)')
                 raise e
               rescue Exception => e
-                warn("Warning: General exception decrypting GPG file")
+                warn('Warning: General exception decrypting GPG file')
                 raise e
               end
 
@@ -204,11 +201,9 @@ class Hiera
           end
 
           def self.create_keys
-            STDERR.puts "The GPG encryptor does not support creation of keys, use the GPG command lines tools instead"
+            STDERR.puts 'The GPG encryptor does not support creation of keys, use the GPG command lines tools instead'
           end
-
         end
-
       end
     end
   end
