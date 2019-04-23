@@ -120,7 +120,7 @@ class Hiera
             end
           end
 
-          def self.encrypt plaintext
+          def self.encrypt(plaintext)
             unless defined?(GPGME)
               raise RecoverableError, "Encryption is only supported when using the 'gpgme' gem"
             end
@@ -162,7 +162,7 @@ class Hiera
             ciphertext.read
           end
 
-          def self.decrypt ciphertext
+          def self.decrypt(ciphertext)
             gnupghome = self.gnupghome
 
             unless defined?(GPGME)
