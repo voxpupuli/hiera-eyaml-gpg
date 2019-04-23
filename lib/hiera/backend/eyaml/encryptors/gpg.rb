@@ -51,7 +51,7 @@ class Hiera
                 io.puts(passphrase)
                 io.flush
               ensure
-                (0...$_.length).each do |i| $_[i] = ?0 end if $_
+                (0...$_.length).each { |i| $_[i] = ?0 } if $_
                 system('stty echo')
               end
           end
@@ -101,10 +101,10 @@ class Hiera
                                               else
                                                 path = Pathname.new(filename).realpath.dirname
                                                 selected_file = nil
-                                                path.descend { |path| path
-                                                                      potential_file = path.join('hiera-eyaml-gpg.recipients')
-                                                                      selected_file = potential_file if potential_file.exist?
-                                                }
+                                                path.descend do |path| path
+                                                                       potential_file = path.join('hiera-eyaml-gpg.recipients')
+                                                                       selected_file = potential_file if potential_file.exist?
+                                                end
                                                 debug("Using file at #{selected_file}")
                                                 selected_file
                                               end
@@ -113,9 +113,9 @@ class Hiera
                            if recipient_file.nil?
                              []
                            else
-                             recipient_file.readlines.map { |line|
+                             recipient_file.readlines.map do |line|
                                line.strip unless line.start_with?('#') || line.strip.empty?
-                             }.compact
+                             end.compact
                            end
             end
           end
@@ -134,13 +134,13 @@ class Hiera
 
             raise RecoverableError, 'No recipients provided, don\'t know who to encrypt to' if recipients.empty?
 
-            keys = recipients.map { |r|
+            keys = recipients.map do |r|
               key_to_use = ctx.keys(r).first
               if key_to_use.nil?
                 raise RecoverableError, "No key found on keyring for #{r}"
               end
               key_to_use
-            }
+            end
             debug("Keys: #{keys}")
 
             always_trust = option(:always_trust)
