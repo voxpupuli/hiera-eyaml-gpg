@@ -59,7 +59,7 @@ class Hiera
 
           def self.gnupghome
             gnupghome = if ENV['HIERA_EYAML_GPG_GNUPGHOME'].nil?
-                          self.option :gnupghome
+                          option :gnupghome
                         else
                           ENV['HIERA_EYAML_GPG_GNUPGHOME']
                         end
@@ -76,12 +76,12 @@ class Hiera
           end
 
           def self.find_recipients
-            recipient_option = self.option :recipients
+            recipient_option = option :recipients
             recipients = if !recipient_option.nil?
                            debug('Using --recipients option')
                            recipient_option.split(',')
             else
-              recipient_file_option = self.option :recipients_file
+              recipient_file_option = option :recipients_file
               recipient_file = if !recipient_file_option.nil?
                                  debug('Using --recipients-file option')
                                  Pathname.new(recipient_file_option)
@@ -126,11 +126,11 @@ class Hiera
               raise RecoverableError, "Encryption is only supported when using the 'gpgme' gem"
             end
 
-            GPGME::Engine.home_dir = self.gnupghome
+            GPGME::Engine.home_dir = gnupghome
 
             ctx = GPGME::Ctx.new
 
-            recipients = self.find_recipients
+            recipients = find_recipients
             debug("Recipents are #{recipients}")
 
             raise RecoverableError, 'No recipients provided, don\'t know who to encrypt to' if recipients.empty?
@@ -144,7 +144,7 @@ class Hiera
             }
             debug("Keys: #{keys}")
 
-            always_trust = self.option(:always_trust)
+            always_trust = option(:always_trust)
             unless always_trust
               # check validity of recipients (this is possibly naive, but better than the unhelpful
               # error that it would spit out otherwise)
