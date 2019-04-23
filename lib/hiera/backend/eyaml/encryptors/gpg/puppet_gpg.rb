@@ -1,3 +1,4 @@
+require 'puppet'
 require 'puppet/util/execution'
 require 'puppet/file_system/uniquefile'
 
