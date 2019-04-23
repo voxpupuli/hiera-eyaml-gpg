@@ -79,13 +79,13 @@ class Hiera
           def self.find_recipients
             recipient_option = self.option :recipients
             recipients = if !recipient_option.nil?
-              debug('Using --recipients option')
-              recipient_option.split(',')
+                           debug('Using --recipients option')
+                           recipient_option.split(',')
             else
               recipient_file_option = self.option :recipients_file
               recipient_file = if !recipient_file_option.nil?
-                debug('Using --recipients-file option')
-                Pathname.new(recipient_file_option)
+                                 debug('Using --recipients-file option')
+                                 Pathname.new(recipient_file_option)
               else
                 debug('Searching for any hiera-eyaml-gpg.recipients files in path')
                 # if we are editing a file, look for a hiera-eyaml-gpg.recipients file
@@ -176,7 +176,7 @@ class Hiera
             GPGME::Engine.home_dir = gnupghome
 
             ctx = if hiera?
-              GPGME::Ctx.new
+                    GPGME::Ctx.new
             else
               GPGME::Ctx.new(passphrase_callback: method(:passfunc))
             end
