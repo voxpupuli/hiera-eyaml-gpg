@@ -86,12 +86,12 @@ class Hiera
                                               debug('Searching for any hiera-eyaml-gpg.recipients files in path')
                                               # if we are editing a file, look for a hiera-eyaml-gpg.recipients file
                                               filename = case Eyaml::Options[:source]
-                                              when :file
-                                                Eyaml::Options[:file]
-                                              when :eyaml
-                                                Eyaml::Options[:eyaml]
-                                              else
-                                                nil
+                                                         when :file
+                                                           Eyaml::Options[:file]
+                                                         when :eyaml
+                                                           Eyaml::Options[:eyaml]
+                                                         else
+                                                           nil
                                               end
 
                                               if filename.nil?
