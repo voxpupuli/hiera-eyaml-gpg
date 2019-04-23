@@ -80,44 +80,44 @@ class Hiera
             recipients = if !recipient_option.nil?
                            debug('Using --recipients option')
                            recipient_option.split(',')
-            else
-              recipient_file_option = option :recipients_file
-              recipient_file = if !recipient_file_option.nil?
-                                 debug('Using --recipients-file option')
-                                 Pathname.new(recipient_file_option)
-              else
-                debug('Searching for any hiera-eyaml-gpg.recipients files in path')
-                # if we are editing a file, look for a hiera-eyaml-gpg.recipients file
-                filename = case Eyaml::Options[:source]
-                when :file
-                  Eyaml::Options[:file]
-                when :eyaml
-                  Eyaml::Options[:eyaml]
-                else
-                  nil
-                end
+                         else
+                           recipient_file_option = option :recipients_file
+                           recipient_file = if !recipient_file_option.nil?
+                                              debug('Using --recipients-file option')
+                                              Pathname.new(recipient_file_option)
+                                            else
+                                              debug('Searching for any hiera-eyaml-gpg.recipients files in path')
+                                              # if we are editing a file, look for a hiera-eyaml-gpg.recipients file
+                                              filename = case Eyaml::Options[:source]
+                                              when :file
+                                                Eyaml::Options[:file]
+                                              when :eyaml
+                                                Eyaml::Options[:eyaml]
+                                              else
+                                                nil
+                                              end
 
-                if filename.nil?
-                  nil
-                else
-                  path = Pathname.new(filename).realpath.dirname
-                  selected_file = nil
-                  path.descend{|path| path
-                                      potential_file = path.join('hiera-eyaml-gpg.recipients')
-                                      selected_file = potential_file if potential_file.exist?
-                  }
-                  debug("Using file at #{selected_file}")
-                  selected_file
-                end
-              end
+                                              if filename.nil?
+                                                nil
+                                              else
+                                                path = Pathname.new(filename).realpath.dirname
+                                                selected_file = nil
+                                                path.descend{|path| path
+                                                                    potential_file = path.join('hiera-eyaml-gpg.recipients')
+                                                                    selected_file = potential_file if potential_file.exist?
+                                                }
+                                                debug("Using file at #{selected_file}")
+                                                selected_file
+                                              end
+                           end
 
-              if recipient_file.nil?
-                []
-              else
-                recipient_file.readlines.map{ |line|
-                  line.strip unless line.start_with? '#' or line.strip.empty?
-                }.compact
-              end
+                           if recipient_file.nil?
+                             []
+                           else
+                             recipient_file.readlines.map{ |line|
+                               line.strip unless line.start_with? '#' or line.strip.empty?
+                             }.compact
+                           end
             end
           end
 
@@ -176,8 +176,8 @@ class Hiera
 
             ctx = if hiera?
                     GPGME::Ctx.new
-            else
-              GPGME::Ctx.new(passphrase_callback: method(:passfunc))
+                  else
+                    GPGME::Ctx.new(passphrase_callback: method(:passfunc))
             end
 
             if !ctx.keys.empty?
