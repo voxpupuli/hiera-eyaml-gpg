@@ -22,18 +22,18 @@ class Hiera
 
         class Gpg < Encryptor
 
-          self.tag = "GPG"
+          self.tag = 'GPG'
 
           self.options = {
-            :gnupghome => { :desc => "Location of your GNUPGHOME directory",
+            :gnupghome => { :desc => 'Location of your GNUPGHOME directory',
                             :type => :string,
                             :default => "#{["HOME", "HOMEPATH"].reject { |h| ENV[h].nil? }.map { |h| ENV[h]+"/.gnupg" }.first || ""}"},
-            :always_trust => { :desc => "Assume that used keys are fully trusted",
+            :always_trust => { :desc => 'Assume that used keys are fully trusted',
                                :type => :boolean,
                                :default => false },
-            :recipients => { :desc => "List of recipients (comma separated)",
+            :recipients => { :desc => 'List of recipients (comma separated)',
                              :type => :string },
-            :recipients_file => { :desc => "File containing a list of recipients (one on each line)",
+            :recipients_file => { :desc => 'File containing a list of recipients (one on each line)',
                              :type => :string }
           }
 
@@ -66,8 +66,8 @@ class Hiera
                         end
             debug("GNUPGHOME is #{gnupghome}")
             if gnupghome.nil? || gnupghome.empty?
-              warn("No GPG home directory configured, check gpg_gnupghome configuration value is correct")
-              raise ArgumentError, "No GPG home directory configured, check gpg_gnupghome configuration value is correct"
+              warn('No GPG home directory configured, check gpg_gnupghome configuration value is correct')
+              raise ArgumentError, 'No GPG home directory configured, check gpg_gnupghome configuration value is correct'
             elsif !File.directory?(gnupghome)
               warn("Configured GPG home directory #{gnupghome} doesn't exist, check gpg_gnupghome configuration value is correct")
               raise ArgumentError, "Configured GPG home directory #{gnupghome} doesn't exist, check gpg_gnupghome configuration value is correct"
@@ -79,15 +79,15 @@ class Hiera
           def self.find_recipients
             recipient_option = self.option :recipients
             recipients = if !recipient_option.nil?
-              debug("Using --recipients option")
-              recipient_option.split(",")
+              debug('Using --recipients option')
+              recipient_option.split(',')
             else
               recipient_file_option = self.option :recipients_file
               recipient_file = if !recipient_file_option.nil?
-                debug("Using --recipients-file option")
+                debug('Using --recipients-file option')
                 Pathname.new(recipient_file_option)
               else
-                debug("Searching for any hiera-eyaml-gpg.recipients files in path")
+                debug('Searching for any hiera-eyaml-gpg.recipients files in path')
                 # if we are editing a file, look for a hiera-eyaml-gpg.recipients file
                 filename = case Eyaml::Options[:source]
                 when :file
@@ -188,10 +188,10 @@ class Hiera
               begin
                 txt = ctx.decrypt(raw)
               rescue GPGME::Error::DecryptFailed => e
-                warn("Fatal: Failed to decrypt ciphertext (check settings and that you are a recipient)")
+                warn('Fatal: Failed to decrypt ciphertext (check settings and that you are a recipient)')
                 raise e
               rescue Exception => e
-                warn("Warning: General exception decrypting GPG file")
+                warn('Warning: General exception decrypting GPG file')
                 raise e
               end
 
@@ -204,7 +204,7 @@ class Hiera
           end
 
           def self.create_keys
-            STDERR.puts "The GPG encryptor does not support creation of keys, use the GPG command lines tools instead"
+            STDERR.puts 'The GPG encryptor does not support creation of keys, use the GPG command lines tools instead'
           end
 
         end
