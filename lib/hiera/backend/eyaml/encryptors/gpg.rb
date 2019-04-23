@@ -51,7 +51,7 @@ class Hiera
                 io.puts(passphrase)
                 io.flush
               ensure
-                (0 ... $_.length).each do |i| $_[i] = ?0 end if $_
+                (0...$_.length).each do |i| $_[i] = ?0 end if $_
                 system('stty echo')
               end
           end
