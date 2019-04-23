@@ -54,7 +54,7 @@ class Hiera
                 io.flush
               ensure
                 (0 ... $_.length).each do |i| $_[i] = ?0 end if $_
-                  system('stty echo')
+                system('stty echo')
               end
           end
 
@@ -104,8 +104,8 @@ class Hiera
                   path = Pathname.new(filename).realpath.dirname
                   selected_file = nil
                   path.descend{|path| path
-                    potential_file = path.join('hiera-eyaml-gpg.recipients')
-                    selected_file = potential_file if potential_file.exist?
+                                      potential_file = path.join('hiera-eyaml-gpg.recipients')
+                                      selected_file = potential_file if potential_file.exist?
                   }
                   debug("Using file at #{selected_file}")
                   selected_file
