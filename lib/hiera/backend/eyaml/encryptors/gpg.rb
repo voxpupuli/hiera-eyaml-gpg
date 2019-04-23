@@ -25,7 +25,7 @@ class Hiera
           self.options = {
             gnupghome: { desc: 'Location of your GNUPGHOME directory',
                          type: :string,
-                         default: (%w[HOME HOMEPATH].reject { |h| ENV[h].nil? }.map { |h| ENV[h] + '/.gnupg' }.first || '').to_s},
+                         default: (%w[HOME HOMEPATH].reject { |h| ENV[h].nil? }.map { |h| ENV[h] + '/.gnupg' }.first || '').to_s },
             always_trust: { desc: 'Assume that used keys are fully trusted',
                             type: :boolean,
                             default: false },
