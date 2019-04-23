@@ -92,7 +92,7 @@ class Hiera
                                                            Eyaml::Options[:eyaml]
                                                          else
                                                            nil
-                                              end
+                                                         end
 
                                               if filename.nil?
                                                 nil
@@ -107,7 +107,7 @@ class Hiera
                                                 debug("Using file at #{selected_file}")
                                                 selected_file
                                               end
-                           end
+                                            end
 
                            if recipient_file.nil?
                              []
@@ -116,7 +116,7 @@ class Hiera
                                line.strip unless line.start_with?('#') || line.strip.empty?
                              end.compact
                            end
-            end
+                         end
           end
 
           def self.encrypt(plaintext)
@@ -176,7 +176,7 @@ class Hiera
                     GPGME::Ctx.new
                   else
                     GPGME::Ctx.new(passphrase_callback: method(:passfunc))
-            end
+                  end
 
             if !ctx.keys.empty?
               raw = GPGME::Data.new(ciphertext)
