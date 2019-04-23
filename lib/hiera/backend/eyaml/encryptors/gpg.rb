@@ -99,9 +99,10 @@ class Hiera
                                               else
                                                 path = Pathname.new(filename).realpath.dirname
                                                 selected_file = nil
-                                                path.descend do |path| path
-                                                                       potential_file = path.join('hiera-eyaml-gpg.recipients')
-                                                                       selected_file = potential_file if potential_file.exist?
+                                                path.descend do |path|
+                                                  path
+                                                  potential_file = path.join('hiera-eyaml-gpg.recipients')
+                                                  selected_file = potential_file if potential_file.exist?
                                                 end
                                                 debug("Using file at #{selected_file}")
                                                 selected_file
