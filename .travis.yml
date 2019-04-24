@@ -8,3 +8,20 @@ rvm:
   - 2.4.6
 notifications:
   email: false
+  irc:
+    on_success: always
+    on_failure: always
+    channels:
+      - "chat.freenode.org#voxpupuli-notifications"
+branches:
+  only:
+    - master
+    - /^v\d/
+deploy:
+  provider: rubygems
+  api_key:
+    secure: 'EyDb/MobQxkx7BmqBaNPBRdxuMZ+5x2Gv+QIUGCc2WIRB6cMd8sOI9+Q9ENOfz+LNe0T+0uxhsdYYQivxEczUUgZrlH5ILBKxWvBhvO7kV9SVa73uj/TXJnzKJ39Wwc4ITEwtz6is6InYa6gjf2sPWFlbNB8GXTaW06S8eg0Q1A='
+  gem: hiera-eyaml-gpg
+  on:
+    tags: true
+    repo: voxpupuli/hiera-eyaml-gpg
