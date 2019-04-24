@@ -20,6 +20,7 @@ class Hiera
     module Eyaml
       module Encryptors
         class Gpg < Encryptor
+          VERSION = Hiera::Backend::Eyaml::Encryptors::GpgVersion::VERSION
           self.tag = 'GPG'
 
           self.options = {
