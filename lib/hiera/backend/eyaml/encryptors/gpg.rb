@@ -35,16 +35,16 @@ class Hiera
                                type: :string }
           }
 
-          @@passphrase_cache = {}
+          @passphrase_cache = {}
 
           def self.passfunc(_hook, uid_hint, _passphrase_info, _prev_was_bad, fd)
             system('stty -echo')
 
-            unless @@passphrase_cache.key?(uid_hint)
-              @@passphrase_cache[uid_hint] = ask("Enter passphrase for #{uid_hint}: ") { |q| q.echo = '' }
+            unless @passphrase_cache.key?(uid_hint)
+              @passphrase_cache[uid_hint] = ask("Enter passphrase for #{uid_hint}: ") { |q| q.echo = '' }
               $stderr.puts
             end
-            passphrase = @@passphrase_cache[uid_hint]
+            passphrase = @passphrase_cache[uid_hint]
 
             io = IO.for_fd(fd, 'w')
             io.puts(passphrase)
@@ -69,53 +69,6 @@ class Hiera
               raise ArgumentError, "Configured GPG home directory #{gnupghome} doesn't exist, check gpg_gnupghome configuration value is correct"
             else
               gnupghome
-            end
-          end
-
-          def self.find_recipients
-            recipient_option = option :recipients
-            recipients = if !recipient_option.nil?
-                           debug('Using --recipients option')
-                           recipient_option.split(',')
-                         else
-                           recipient_file_option = option :recipients_file
-                           recipient_file = if !recipient_file_option.nil?
-                                              debug('Using --recipients-file option')
-                                              Pathname.new(recipient_file_option)
-                                            else
-                                              debug('Searching for any hiera-eyaml-gpg.recipients files in path')
-                                              # if we are editing a file, look for a hiera-eyaml-gpg.recipients file
-                                              filename = case Eyaml::Options[:source]
-                                                         when :file
-                                                           Eyaml::Options[:file]
-                                                         when :eyaml
-                                                           Eyaml::Options[:eyaml]
-                                                         else
-                                                           nil
-                                              end
-
-                                              if filename.nil?
-                                                nil
-                                              else
-                                                path = Pathname.new(filename).realpath.dirname
-                                                selected_file = nil
-                                                path.descend do |path|
-                                                  path
-                                                  potential_file = path.join('hiera-eyaml-gpg.recipients')
-                                                  selected_file = potential_file if potential_file.exist?
-                                                end
-                                                debug("Using file at #{selected_file}")
-                                                selected_file
-                                              end
-                           end
-
-                           if recipient_file.nil?
-                             []
-                           else
-                             recipient_file.readlines.map do |line|
-                               line.strip unless line.start_with?('#') || line.strip.empty?
-                             end.compact
-                           end
             end
           end
 
@@ -176,7 +129,7 @@ class Hiera
                     GPGME::Ctx.new
                   else
                     GPGME::Ctx.new(passphrase_callback: method(:passfunc))
-            end
+                  end
 
             if !ctx.keys.empty?
               raw = GPGME::Data.new(ciphertext)
@@ -187,7 +140,7 @@ class Hiera
               rescue GPGME::Error::DecryptFailed => e
                 warn('Fatal: Failed to decrypt ciphertext (check settings and that you are a recipient)')
                 raise e
-              rescue Exception => e
+              rescue StandardError => e
                 warn('Warning: General exception decrypting GPG file')
                 raise e
               end
@@ -202,6 +155,55 @@ class Hiera
 
           def self.create_keys
             STDERR.puts 'The GPG encryptor does not support creation of keys, use the GPG command lines tools instead'
+          end
+
+          class << self
+            private
+
+            def find_recipients
+              recipient_option = option :recipients
+
+              unless recipient_option.nil?
+                debug('Using --recipients option')
+                return recipient_option.split(',')
+              end
+
+              recipient_file_option = option :recipients_file
+              recipient_file = if recipient_file_option.nil?
+                                 debug('Searching for any hiera-eyaml-gpg.recipients files in path')
+                                 find_recipient_file
+                               else
+                                 debug('Using --recipients-file option')
+                                 Pathname.new(recipient_file_option)
+                               end
+
+              return [] if recipient_file.nil?
+
+              recipient_file.readlines.map do |line|
+                line.strip unless line.start_with?('#') || line.strip.empty?
+              end.compact
+            end
+
+            def find_recipient_file
+              # if we are editing a file, look for a hiera-eyaml-gpg.recipients file
+              filename = case Eyaml::Options[:source]
+                         when :file
+                           Eyaml::Options[:file]
+                         when :eyaml
+                           Eyaml::Options[:eyaml]
+                         end
+
+              return if filename.nil?
+
+              root = Pathname.new(filename).realpath.dirname
+              selected_file = nil
+              root.descend do |path|
+                potential_file = path.join('hiera-eyaml-gpg.recipients')
+                selected_file = potential_file if potential_file.exist?
+              end
+              debug("Using file at #{selected_file}")
+              selected_file
+            end
           end
         end
       end
