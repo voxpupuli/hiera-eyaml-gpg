@@ -81,32 +81,12 @@ class Hiera
             end
 
             recipient_file_option = option :recipients_file
-            recipient_file = if !recipient_file_option.nil?
+            recipient_file = if recipient_file_option.nil?
+                               debug('Searching for any hiera-eyaml-gpg.recipients files in path')
+                               find_recipient_file
+                             else
                                debug('Using --recipients-file option')
                                Pathname.new(recipient_file_option)
-                             else
-                               debug('Searching for any hiera-eyaml-gpg.recipients files in path')
-                               # if we are editing a file, look for a hiera-eyaml-gpg.recipients file
-                               filename = case Eyaml::Options[:source]
-                                          when :file
-                                            Eyaml::Options[:file]
-                                          when :eyaml
-                                            Eyaml::Options[:eyaml]
-                                          end
-
-                               if filename.nil?
-                                 nil
-                               else
-                                 path = Pathname.new(filename).realpath.dirname
-                                 selected_file = nil
-                                 path.descend do |path|
-                                   path
-                                   potential_file = path.join('hiera-eyaml-gpg.recipients')
-                                   selected_file = potential_file if potential_file.exist?
-                                 end
-                                 debug("Using file at #{selected_file}")
-                                 selected_file
-                               end
                              end
 
             return [] if recipient_file.nil?
@@ -199,6 +179,29 @@ class Hiera
 
           def self.create_keys
             STDERR.puts 'The GPG encryptor does not support creation of keys, use the GPG command lines tools instead'
+          end
+
+          private
+
+          def self.find_recipient_file
+             # if we are editing a file, look for a hiera-eyaml-gpg.recipients file
+             filename = case Eyaml::Options[:source]
+                        when :file
+                          Eyaml::Options[:file]
+                        when :eyaml
+                          Eyaml::Options[:eyaml]
+                        end
+
+             return if filename.nil?
+
+             root = Pathname.new(filename).realpath.dirname
+             selected_file = nil
+             root.descend do |path|
+               potential_file = path.join('hiera-eyaml-gpg.recipients')
+               selected_file = potential_file if potential_file.exist?
+             end
+             debug("Using file at #{selected_file}")
+             selected_file
           end
         end
       end
