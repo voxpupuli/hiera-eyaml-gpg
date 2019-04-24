@@ -140,7 +140,7 @@ class Hiera
               rescue GPGME::Error::DecryptFailed => e
                 warn('Fatal: Failed to decrypt ciphertext (check settings and that you are a recipient)')
                 raise e
-              rescue Exception => e
+              rescue StandardError => e
                 warn('Warning: General exception decrypting GPG file')
                 raise e
               end
