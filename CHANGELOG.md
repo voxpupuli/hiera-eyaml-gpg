@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.7.1](https://github.com/voxpupuli/hiera-eyaml-gpg/tree/v0.7.1) (2019-04-24)
+
+[Full Changelog](https://github.com/voxpupuli/hiera-eyaml-gpg/compare/v0.7.0...v0.7.1)
+
+**Merged pull requests:**
+
+- Use correct travis-ci.com secret [\#61](https://github.com/voxpupuli/hiera-eyaml-gpg/pull/61) ([alexjfisher](https://github.com/alexjfisher))
+
 ## [v0.7.0](https://github.com/voxpupuli/hiera-eyaml-gpg/tree/v0.7.0) (2019-04-24)
 
 [Full Changelog](https://github.com/voxpupuli/hiera-eyaml-gpg/compare/vp_migration...v0.7.0)
