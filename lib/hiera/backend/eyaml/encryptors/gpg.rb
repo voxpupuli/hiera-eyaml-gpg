@@ -35,16 +35,16 @@ class Hiera
                                type: :string }
           }
 
-          @@passphrase_cache = {}
+          @passphrase_cache = {}
 
           def self.passfunc(_hook, uid_hint, _passphrase_info, _prev_was_bad, fd)
             system('stty -echo')
 
-            unless @@passphrase_cache.key?(uid_hint)
-              @@passphrase_cache[uid_hint] = ask("Enter passphrase for #{uid_hint}: ") { |q| q.echo = '' }
+            unless @passphrase_cache.key?(uid_hint)
+              @passphrase_cache[uid_hint] = ask("Enter passphrase for #{uid_hint}: ") { |q| q.echo = '' }
               $stderr.puts
             end
-            passphrase = @@passphrase_cache[uid_hint]
+            passphrase = @passphrase_cache[uid_hint]
 
             io = IO.for_fd(fd, 'w')
             io.puts(passphrase)
