@@ -55,6 +55,11 @@ As root
 /opt/puppetlabs/server/bin/puppetserver gem install hiera-eyaml-gpg ruby_gpg
 ```
 
+Puppet versions
+---------------
+
+This project supports Puppet 5.5.8 and later.
+
 How to use
 ----------
 
