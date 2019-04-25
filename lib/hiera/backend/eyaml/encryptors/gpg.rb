@@ -14,6 +14,7 @@ require 'pathname'
 require 'hiera/backend/eyaml/encryptor'
 require 'hiera/backend/eyaml/utils'
 require 'hiera/backend/eyaml/options'
+require 'hiera/backend/eyaml/encryptors/gpg/version'
 
 class Hiera
   module Backend
