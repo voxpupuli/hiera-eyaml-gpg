@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.7.3](https://github.com/voxpupuli/hiera-eyaml-gpg/tree/v0.7.3) (2019-04-25)
+
+[Full Changelog](https://github.com/voxpupuli/hiera-eyaml-gpg/compare/v0.7.2...v0.7.3)
+
+**Fixed bugs:**
+
+- Fix uninitialized constant `Hiera::Backend::Eyaml::Encryptors::GpgVer… [\#65](https://github.com/voxpupuli/hiera-eyaml-gpg/pull/65) ([alexjfisher](https://github.com/alexjfisher))
+
 ## [v0.7.2](https://github.com/voxpupuli/hiera-eyaml-gpg/tree/v0.7.2) (2019-04-24)
 
 [Full Changelog](https://github.com/voxpupuli/hiera-eyaml-gpg/compare/v0.7.1...v0.7.2)
