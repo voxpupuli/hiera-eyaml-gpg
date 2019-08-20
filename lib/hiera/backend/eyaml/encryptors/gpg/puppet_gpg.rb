@@ -15,7 +15,7 @@ class Hiera
 
           real_command = "#{command} #{tmpfile.path}"
 
-          output = Puppet::Util::Execution.execute(real_command, { combine: false, failonfail: true })
+          output = Puppet::Util::Execution.execute(real_command, combine: false, failonfail: true )
           tmpfile.unlink
 
           if output.exitstatus != 0
