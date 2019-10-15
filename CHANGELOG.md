@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.7.4](https://github.com/voxpupuli/hiera-eyaml-gpg/tree/v0.7.4) (2019-10-15)
+
+[Full Changelog](https://github.com/voxpupuli/hiera-eyaml-gpg/compare/v0.7.3...v0.7.4)
+
+**Closed issues:**
+
+- Output is Garbled if contention occurs on GPG random\_seed. [\#68](https://github.com/voxpupuli/hiera-eyaml-gpg/issues/68)
+
+**Merged pull requests:**
+
+- Don't merge stderr into stdout for GPG Output.  [\#69](https://github.com/voxpupuli/hiera-eyaml-gpg/pull/69) ([KeithWard](https://github.com/KeithWard))
+
 ## [v0.7.3](https://github.com/voxpupuli/hiera-eyaml-gpg/tree/v0.7.3) (2019-04-25)
 
 [Full Changelog](https://github.com/voxpupuli/hiera-eyaml-gpg/compare/v0.7.2...v0.7.3)
