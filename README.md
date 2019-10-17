@@ -22,7 +22,7 @@ Requirements
 ------------
 
 You'll need a working GPG setup with your own keypair and a public keyring containing any other
-keys that you want to work
+keys that you want to work. GnuPG must be at least v2.
 
 To get started, install the hiera-eyaml-gpg gem.
 
