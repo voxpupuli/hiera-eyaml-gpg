@@ -40,7 +40,7 @@ Note: you will need to use `ruby_gpg` with the Puppet server as it uses JRuby wh
 make use of native extensions such as `gpgme`.
 
 If you haven't already installed it, this requires and will install the hiera-eyaml gem, which you
-should probably acquaint yourself with at https://github.com/TomPoulton/hiera-eyaml.
+should probably acquaint yourself with at https://github.com/voxpupuli/hiera-eyaml.
 
 Note that in order to install the gpgme gem you'll need to have the ruby development package installed
 for your distribution.
